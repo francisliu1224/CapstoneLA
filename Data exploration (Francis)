@@ -1,0 +1,36 @@
+title: "Capstone LA"
+author: "fengxian liu"
+date: "2017/10/17"
+output: html_document
+---
+
+```{r}
+install.packages("readxl")
+library(readxl)
+gre <- read_excel("PersonGRE.xlsx")
+```
+
+```{r}
+summary(ApplicationBase)
+```
+identity           term          Term Start                    submitted 
+
+```{r}
+hist(ApplicationBase$app_number)
+```
+The Frequency 
+
+```{r}
+table(ApplicationBase$citizenship1)
+```
+The distribution of Student's source
+
+```{r}
+regression<-lm(ApplicationBase$app_number~ApplicationBase$age_at_app)
+summary(regression)
+``` 
+Regression of base and age/ P-value is meaningful and significant 
+
+```{r}
+cor(ApplicationBase$app_number,ApplicationBase$age_at_app)
+````

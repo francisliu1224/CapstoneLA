@@ -576,3 +576,86 @@ ggplot(data=Data, aes(Data$sum_open_or_url_message)) +
   labs(title="Number of messages OPEN/URL", x="NUmber of Messages", y="Number of Applicants")+ 
   theme(plot.title = element_text(face = "bold", size=15))
 ```
+
+
+20.
+```{r} #applicationbase~scholarship 
+applar<-dplyr::select(ApplicationBase,app_number,Scholarship_app)
+regression<-lm(ApplicationBase$app_number~ApplicationBase$Scholarship_app)
+summary(regression)
+applar<-na.omit(applar) 
+applar2<-applar[c("app_number","Scholarship_app")]
+CORs <- cor(applar2)
+corrplot(CORs, order="AOE", method="circle", tl.pos="lt", type="upper", tl.col="black", tl.cex=0.6, tl.srt=45,addCoef.col="black", addCoefasPercent = TRUE,sig.level=0.50, insig = "blank")
+```
+```{r} #applicationbase ~age 
+appage<-dplyr::select(ApplicationBase,app_number,age_at_app)
+regression<-lm(ApplicationBase$age_at_app~ApplicationBase$app_number)
+summary(regression)
+appage<-na.omit(appage) 
+appage2<-appage[c("app_number","age_at_app")]
+CORa <- cor(appage2)
+corrplot(CORa, order="AOE", method="circle", tl.pos="lt", type="upper", tl.col="black", tl.cex=0.6, tl.srt=45,addCoef.col="black", addCoefasPercent = TRUE,sig.level=0.50, insig = "blank")
+```
+
+21.
+```{r}#applicationbase~ gre and gpa
+appbase<-dplyr::select(ApplicationBase,identity,app_number,age_at_app,Scholarship_app)
+gpa<-dplyr::select(PersonSchools,identity,gpa)
+gre<-dplyr::select(PersonGRE,identity,Verbal,Quantitative,Writing)
+appgg<-dplyr::full_join(appbase,gpa,by="identity", all=TRUE)
+appgg<-dplyr::select(appgg,-identity)
+appgg<-na.omit(appgg) 
+regression<-lm(appgg$app_number~appgg$gpa)
+summary(regression)
+appgg2<-appgg[c("app_number","age_at_app","Scholarship_app","gpa")]
+gpa1<-dplyr::select(PersonSchools,gpa)
+is.NullOb <- function(x) is.null(x) | all(sapply(x, is.null))
+
+## Recursively step down into list, removing all such objects 
+rmNullObs <- function(x) {
+   x <- Filter(Negate(is.NullOb), x)
+   lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
+}
+
+rmNullObs(gpa1)
+gpa2 <- list(gpa1)
+gpa3<-rmNullObs(gpa2)
+non_null_names <- which(!sapply(gpa1, is.null))
+gpa2 <- gpa1[non_null_names]
+gpa3<-names(gpa2) <- non_null_names
+appgg2<-appgg[c("app_number","age_at_app","Scholarship_app","gpa3")]
+CORgg <- cor(appgg2)
+corrplot(CORgg, order="AOE", method="circle", tl.pos="lt", type="upper", tl.col="black", tl.cex=0.6, tl.srt=45,addCoef.col="black", addCoefasPercent = TRUE,sig.level=0.50, insig = "blank")
+appgg<-dplyr::full_join(appbase,gre,by="identity", all=TRUE)
+appgg<-na.omit(appgg)
+appgg2<-appgg[c("app_number","Verbal","Quantitative")]
+regression<-lm(appgg2$app_number~appgg2$Verbal+appgg2$Quantitative)
+summary(regression)
+CORgg <- cor(appgg2)
+corrplot(CORgg, order="AOE", method="circle", tl.pos="lt", type="upper", tl.col="black", tl.cex=0.6, tl.srt=45,addCoef.col="black", addCoefasPercent = TRUE,sig.level=0.50, insig = "blank")
+greh<-subset(gre,"Verbel">= 150)
+```
+
+22.
+```{r} ##applicationbase :app_number,age_at_app,'Credits Req',Scholarship_app (four part)
+appbase<-dplyr::select(ApplicationBase,identity,app_number,age_at_app,'Credits Req',Scholarship_app)
+regression<-lm(ApplicationBase$app_number~ApplicationBase$age_at_app+ApplicationBase$`Credits Req`+ApplicationBase$Scholarship_app)
+summary(regression)
+appbase<-dplyr::select(appbase,-identity)
+appbase<-na.omit(appbase) 
+appbase2<-appbase[c("app_number","age_at_app","Credits Req","Scholarship_app")]
+CORb <- cor(appbase2)
+corrplot(CORb, order="AOE", method="circle", tl.pos="lt", type="upper", tl.col="black", tl.cex=0.6, tl.srt=45,addCoef.col="black", addCoefasPercent = TRUE,sig.level=0.50, insig = "blank")
+```
+23.
+```{r} ##Hisagram of 
+install.packages("readxl")
+library(readxl)
+gre <- read_excel("PersonGRE.xlsx")
+summary(ApplicationBase)
+hist(ApplicationBase$app_number)
+hist(ApplicationBase$age_at_app)
+hist(ApplicationBase$`Credits Req`)
+table(ApplicationBase$permanent_country)
+```
